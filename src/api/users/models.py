@@ -6,7 +6,7 @@ import uuid
 
 class UserModel(Base):
     __tablename__ = "users"
-    userId=Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4(),unique=True,index=True)
+    userId=Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid,unique=True,index=True)
     firstName = Column(String)
     lastName = Column(String)
     Address = Column(Text)
