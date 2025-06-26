@@ -1,7 +1,9 @@
 from fastapi import FastAPI
-from .database.database import Base,engine
-from .api.users.routes import router as UserRouter
-from .api.hostel.routes import router as HostelRouter
+from database.database import Base,engine
+from api.users.routes import router as UserRouter
+from api.hostel.routes import router as HostelRouter
+from database.database import Base
+from api.users.models import UserModel
 
 
 app = FastAPI(
