@@ -13,5 +13,6 @@ class UserModel(Base):
     phoneNumber = Column(String)
     Email = Column(String)
     password = Column(String)
+    isVerfiedUser = Column(bool,default=False)
     Role=Column(String,default="HOSTER",nullable=False)
 
