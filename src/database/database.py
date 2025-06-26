@@ -2,8 +2,14 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base,sessionmaker,Session
 from typing import Annotated
 from fastapi import Depends
+from decouple import config
 
-DATABASE_URL=f"postgresql://username:password@localhost:5432/mydatabase"
+DB_USER = config("DB_USERNAME") 
+DB_PASS = config("DB_PASSWORD")
+DB_NAME = config("DB_NAME")
+DB_PORT = config("DB_PORT")
+
+DATABASE_URL=f"postgresql://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(DATABASE_URL)
 
