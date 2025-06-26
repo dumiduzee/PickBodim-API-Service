@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    container_name: bodimPick
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - postgressNet
+    volumes:
+      - postgressVolume:/var/lib/postgresql/data
+
+
+networks:
+  postgressNet:
+
+volumes:
+  postgressVolume:
