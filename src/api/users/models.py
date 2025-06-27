@@ -1,4 +1,5 @@
-from sqlalchemy import Column,String,Integer,Text,Boolean
+from sqlalchemy import Column,String,Integer,Text,Boolean,DateTime
+from datetime import date
 from database.database import Base
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -15,4 +16,6 @@ class UserModel(Base):
     password = Column(String)
     isVerfiedUser = Column(Boolean,default=False)
     Role=Column(String,default="HOSTER",nullable=False)
+    verficationCode=Column(String,default=None)
+    verficationCodeExpire=Column(DateTime,default=None)
 
