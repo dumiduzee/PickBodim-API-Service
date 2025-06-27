@@ -1,19 +1,37 @@
 version: '3.8'
+
 services:
   db:
     image: postgres:latest
     container_name: bodimPick
     environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "${DB_PORT}:5432"
     networks:
       - postgressNet
     volumes:
       - postgressVolume:/var/lib/postgresql/data
 
+  web:
+    build:
+      context: .  # or ./src if your Dockerfile is in a subdirectory
+      dockerfile: Dockerfile
+    container_name: bodimFastAPI
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - postgressNet
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: 5432
+      DB_HOST: db  # 👈 IMPORTANT: use service name 'db' for internal networking
 
 networks:
   postgressNet:

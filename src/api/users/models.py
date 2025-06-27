@@ -1,4 +1,4 @@
-from sqlalchemy import Column,String,Integer,Text
+from sqlalchemy import Column,String,Integer,Text,Boolean
 from database.database import Base
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -13,6 +13,6 @@ class UserModel(Base):
     phoneNumber = Column(String)
     Email = Column(String)
     password = Column(String)
-    isVerfiedUser = Column(bool,default=False)
+    isVerfiedUser = Column(Boolean,default=False)
     Role=Column(String,default="HOSTER",nullable=False)
 
