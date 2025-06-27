@@ -12,7 +12,7 @@ class UserModel(Base):
     lastName = Column(String)
     Address = Column(Text)
     phoneNumber = Column(String)
-    Email = Column(String)
+    Email = Column(String,unique=True)
     password = Column(String)
     isVerfiedUser = Column(Boolean,default=False)
     Role=Column(String,default="HOSTER",nullable=False)
