@@ -34,7 +34,9 @@ def SendVerificationCode(verification_code,CLIENT_NUMBER,CLIENT_NAME):
         result = res.json()
         if result["status"] == "success":
             return True
+        print(result)
         return False
+    
     except Exception as e:
         print(e)
         raise UserRegisterException()

@@ -44,3 +44,11 @@ def VerifyUserUpdate(USER,DB:Session):
         return True
     else:
         return False
+    
+
+#for request request new otp
+def UpdateOtp(user,otp,expire,db:Session):
+    print(user.userId)
+    user = db.query(UserModel).filter(UserModel.userId == user.userId).update({"verficationCode":otp,"verficationCodeExpire":expire})
+    db.commit()
+    return otp

@@ -1,8 +1,10 @@
 from .utils import GenVerifyCode,SendVerificationCode,HashPassword
-from .repository import IsExists,InsertRegisterRecord,FindUserByUserIdRespo,VerifyUserUpdate
+from .repository import IsExists,InsertRegisterRecord,FindUserByUserIdRespo,VerifyUserUpdate,UpdateOtp
 from datetime import timedelta,datetime
-from .exceptions import UserNotFoundException,UserAlreadyVerifiedException,InvalidOtpCode,OtpCodeExpiredException
+from .exceptions import UserNotFoundException,UserAlreadyVerifiedException,InvalidOtpCode,OtpCodeExpiredException,OtpCodeStillValidException
+from decouple import config
 
+OTP_EXPIRES_IN = config("OTP_EXPIRES_IN")
 
 
 def RegisterUserService(db,user):
@@ -14,7 +16,7 @@ def RegisterUserService(db,user):
         #Hash the password
         user["password"] = HashPassword(user["password"])
         #Genarate expire date and add it to record
-        user["verficationCodeExpire"] = datetime.now() + timedelta(minutes=30)
+        user["verficationCodeExpire"] = datetime.now() + timedelta(minutes=int(OTP_EXPIRES_IN))
         #Insert user into database and get verfication code
         insertedUser = InsertRegisterRecord(db,user=user)
         #Send verification code to user
@@ -40,6 +42,29 @@ def OtpVerificationService(OTP,USER_ID,DB):
         raise OtpCodeExpiredException()
     #update user as verified
     return VerifyUserUpdate(exists_user,DB)
+
+
+#Request enw otp code
+def RequestNewOtpService(user_id,db):
+    #Check user validity
+    exists_user = FindUserByUserIdRespo(user_id,db)
+    if not exists_user:
+        raise UserNotFoundException()
+    if exists_user.isVerfiedUser:
+        raise UserAlreadyVerifiedException()
+    #check otp still valid
+    if exists_user.verficationCodeExpire > datetime.now():
+        raise OtpCodeStillValidException()
+    #Genarate new otp code
+    new_otp = GenVerifyCode()
+    expire_time = datetime.now() + timedelta(minutes=int(OTP_EXPIRES_IN))
+    otp =  UpdateOtp(exists_user,new_otp,expire_time,db)
+    if SendVerificationCode(otp,exists_user.phoneNumber,exists_user.firstName):
+        return True
+    else:
+        return False
+
+    
     
     
 
