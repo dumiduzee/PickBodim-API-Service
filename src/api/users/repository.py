@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from .models import UserModel
 from .exceptions import UserAlreadyExistsException,InternalServerException
+import uuid
 
 
 #Check user exsistance function
@@ -24,5 +25,22 @@ def InsertRegisterRecord(db:Session,user):
         db.refresh(user_record)
         return user_record
     except Exception as e:
+        db.rollback()
         print(e)
         raise InternalServerException()
+
+#Find useer by thir user id 
+def FindUserByUserIdRespo(USERID,DB:Session):
+    user = DB.query(UserModel).filter(UserModel.userId == uuid.UUID(USERID)).first()
+    if user:
+        return user
+    return None
+
+#Update user veriied state to VERFIED
+def VerifyUserUpdate(USER,DB:Session):
+    user = DB.query(UserModel).filter(UserModel.userId == USER.userId).update({"isVerfiedUser":True},synchronize_session=False)
+    DB.commit()
+    if user:
+        return True
+    else:
+        return False

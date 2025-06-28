@@ -34,3 +34,34 @@ class UserRegisterException(UserExceptions):
     def __init__(self, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail = "Registration failed", solution = "Try again later"):
         super().__init__(status_code, detail)
         self.solution = solution
+
+
+class OtpResolutionFailException(UserExceptions):
+    """raise when interl server error occured"""
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "Not a valid otp code", solution = "Recheck your otp code resolution"):
+        super().__init__(status_code, detail)
+        self.solution = solution
+
+class UserNotFoundException(UserExceptions):
+    """raise when user cannot find"""
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "User cannot find!!", solution = "Double check user id"):
+        super().__init__(status_code, detail)
+        self.solution = solution
+
+class UserAlreadyVerifiedException(UserExceptions):
+    """raise when user already verified"""
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "User already verified!!", solution = "Please login instead of re verify"):
+        super().__init__(status_code, detail)
+        self.solution = solution
+
+class InvalidOtpCode(UserExceptions):
+    """raise when invalid otp"""
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "Invalid OTP code!!", solution = "Recheck your verification code or resend it"):
+        super().__init__(status_code, detail)
+        self.solution = solution
+
+class OtpCodeExpiredException(UserExceptions):
+    """when raise opt code expires"""
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "Otp code expired!!", solution = "Genarate new verification code to continue"):
+        super().__init__(status_code, detail)
+        self.solution = solution

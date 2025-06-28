@@ -8,6 +8,8 @@ from api.users.models import UserModel
 from api.users.exceptions import UserExceptions
 
 
+
+
 app = FastAPI(
     title="PickBodim-API-Service",
     description="Core api for managing hostels services arround universities",
@@ -18,6 +20,9 @@ app = FastAPI(
         "email":"xxxxxxx@gmail.com"
     }
 )
+
+
+
 
 #Use routes
 app.include_router(prefix="/api/v1/user",router=UserRouter)
