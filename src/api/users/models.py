@@ -14,8 +14,9 @@ class UserModel(Base):
     phoneNumber = Column(String)
     Email = Column(String,unique=True)
     password = Column(String)
-    isVerfiedUser = Column(Boolean,default=False)
+    isVerfiedUser = Column(Boolean,default=False,nullable=False)
     Role=Column(String,default="HOSTER",nullable=False)
     verficationCode=Column(String,default=None)
     verficationCodeExpire=Column(DateTime,default=None)
-
+    def __repr__(self):
+        return f"UserModel(userId={self.userId}, firstName={self.firstName}, lastName={self.lastName}, Email={self.Email})"

@@ -1,6 +1,14 @@
 from pydantic import BaseModel,Field,field_validator
 from fastapi import status
 from .exceptions import InvalidEmailException,InvalidNumberException
+from typing import Any
+
+class SuccussResponse(BaseModel):
+    status:str=Field(default="succuss")
+    message:str
+    data:Any
+
+
 
 
 class UserRegisterSchema(BaseModel):
