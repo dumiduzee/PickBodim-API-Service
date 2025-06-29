@@ -72,3 +72,23 @@ class OtpCodeStillValidException(UserExceptions):
         super().__init__(status_code, detail)
         self.solution = solution
 
+class PasswordWrongException(UserExceptions):
+    """_summary_
+
+    Args:
+        UserExceptions (_type_): _description_
+    """
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "Password is wrong for this email", solution = "Recheck your password"):
+        super().__init__(status_code, detail)
+        self.solution = solution
+
+class SignInFailedException(UserExceptions):
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "Signin failed!", solution = "retry after sometime"):
+        super().__init__(status_code, detail)
+        self.solution = solution
+
+
+class CredentialsException(UserExceptions):
+    def __init__(self, status_code=status.HTTP_400_BAD_REQUEST, detail = "Unauthorized access", solution = "Logout and login again"):
+        super().__init__(status_code, detail)
+        self.solution = solution

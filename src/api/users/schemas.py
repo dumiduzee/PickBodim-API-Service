@@ -9,8 +9,6 @@ class SuccussResponse(BaseModel):
     data:Any
 
 
-
-
 class UserRegisterSchema(BaseModel):
     firstName:str=Field(min_length=3)
     lastName:str=Field(min_length=3)
@@ -40,3 +38,13 @@ class UserRegisterSchema(BaseModel):
             solution="Please check your phone number it must be starts with 07 and it must have 10 digits"
         )
     
+
+class User(BaseModel):
+    firstName:str=Field(min_length=3)
+    lastName:str=Field(min_length=3)
+    Email:str=Field(min_length=3)
+    Role:str=Field(default="HOSTER")
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

@@ -1,8 +1,14 @@
-from .utils import GenVerifyCode,SendVerificationCode,HashPassword,AccountConfirmOtpSend
-from .repository import IsExists,InsertRegisterRecord,FindUserByUserIdRespo,VerifyUserUpdate,UpdateOtp
+from .utils import GenVerifyCode,SendVerificationCode,HashPassword,AccountConfirmOtpSend,decodeHashedPassword,create_jwt_token,decode_token
+from .repository import IsExists,InsertRegisterRecord,FindUserByUserIdRespo,VerifyUserUpdate,UpdateOtp,FindUserByEmailRepo
 from datetime import timedelta,datetime
-from .exceptions import UserNotFoundException,UserAlreadyVerifiedException,InvalidOtpCode,OtpCodeExpiredException,OtpCodeStillValidException
+from .exceptions import PasswordWrongException,UserNotFoundException,UserAlreadyVerifiedException,InvalidOtpCode,OtpCodeExpiredException,OtpCodeStillValidException,CredentialsException
 from decouple import config
+from fastapi.security  import OAuth2PasswordRequestForm,OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from typing import Annotated
+from fastapi import Depends
+from database.database import db_dependencie
+from .configs import CustomOAuth2PasswordBearer
 
 OTP_EXPIRES_IN = config("OTP_EXPIRES_IN")
 
@@ -62,6 +68,38 @@ def RequestNewOtpService(user_id,db):
         return True
     else:
         return False
+    
+#Use for user signin and genarate token
+def SignInService(user_data:OAuth2PasswordRequestForm,db:Session):
+    #Check user exists and is he verified
+    user = FindUserByEmailRepo(user_data.username,db)
+    if not user:
+        raise UserNotFoundException(
+            detail="User cannot find!",
+            solution="please check your email address"
+        )
+    #Compare passwords
+    if not decodeHashedPassword(user_data.password,user.password):
+        raise PasswordWrongException()
+    # 3genarate jwt token
+    access_token_expires = timedelta(minutes=int(config("ACCESS_TOKEN_EXPIRE_MINUTES")))
+    token = create_jwt_token(data={"sub":str(user.userId),"role":user.Role},expires_in=access_token_expires)
+    return token
+    
+
+oauth2_scheme = CustomOAuth2PasswordBearer(tokenUrl="/api/v1/user/login")
+def get_current_user_service(token:Annotated[str,Depends(oauth2_scheme)],db:db_dependencie):
+    user_id = decode_token(token=token)
+    if not user_id:
+        raise CredentialsException()
+    #find user from with that id
+    user = FindUserByUserIdRespo(user_id,db)
+    if user is None:
+        raise CredentialsException()
+    return user
+
+
+    
 
     
     

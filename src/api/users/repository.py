@@ -36,6 +36,13 @@ def FindUserByUserIdRespo(USERID,DB:Session):
         return user
     return None
 
+#Find user by thi email
+def FindUserByEmailRepo(email,db:Session):
+    user = db.query(UserModel).filter(UserModel.Email == email).first()
+    if user:
+        return user
+    return None
+
 #Update user veriied state to VERFIED
 def VerifyUserUpdate(USER,DB:Session):
     user = DB.query(UserModel).filter(UserModel.userId == USER.userId).update({"isVerfiedUser":True},synchronize_session=False)

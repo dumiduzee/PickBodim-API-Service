@@ -1,8 +1,10 @@
-from fastapi import APIRouter,status
-from .schemas import UserRegisterSchema,SuccussResponse
+from fastapi import APIRouter,status,Depends
+from .schemas import UserRegisterSchema,SuccussResponse,Token,User
 from database.database import db_dependencie
-from .services import RegisterUserService,OtpVerificationService,RequestNewOtpService
-from .exceptions import UserRegisterException,OtpResolutionFailException,InternalServerException
+from .services import RegisterUserService,OtpVerificationService,RequestNewOtpService,SignInService,get_current_user_service
+from .exceptions import UserRegisterException,OtpResolutionFailException,InternalServerException,SignInFailedException
+from fastapi.security import OAuth2PasswordRequestForm
+from typing import Annotated
 
 
 #Define router
@@ -44,3 +46,20 @@ def RequestNewOtp(user_id:str,db:db_dependencie):
             data={}
         )
     raise InternalServerException()
+
+
+#Sign in useer
+@router.post("/login",description="Login handle",response_model=Token)
+def UserLogin(form_data:Annotated[OAuth2PasswordRequestForm,Depends()],db:db_dependencie):
+    token =SignInService(form_data,db)
+    if not token:
+        raise SignInFailedException()
+    return Token(
+        access_token=token,
+        token_type="bearer"
+    )
+
+
+@router.get("/me")
+def userget(current_user:Annotated[User,Depends(get_current_user_service)]):
+    print(current_user)

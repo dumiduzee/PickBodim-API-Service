@@ -4,7 +4,10 @@ import requests
 from passlib.hash import pbkdf2_sha256
 import json
 from .exceptions import UserRegisterException
-
+from datetime import datetime, timedelta, timezone
+import jwt
+from .exceptions import CredentialsException
+from jwt.exceptions import InvalidTokenError,ExpiredSignatureError
 
 def GenVerifyCode():
     """Genarate verification code for the user"""
@@ -15,6 +18,47 @@ def GenVerifyCode():
 def HashPassword(PLAIN_PASSWORD):
     """Use for hash the password"""
     return pbkdf2_sha256.hash(PLAIN_PASSWORD)
+
+def decodeHashedPassword(PLAIN_PASSWORD,HASH_PASSWORD)->bool:
+    """_summary_
+
+    Args:
+        PLAIN_PASSWORD (_type_): _description_
+        HASH_PASSWORD (_type_): _description_
+
+    Returns:
+        bool: _description_
+    """
+    return pbkdf2_sha256.verify(PLAIN_PASSWORD,HASH_PASSWORD)
+
+
+#Create jwt token for user and thir role
+def create_jwt_token(data:dict,expires_in:timedelta | None = None):
+    TOKEN = config("ACCESS_TOKEN_SECRET")
+    to_encode = data.copy()
+    if expires_in:
+        expires = datetime.now(timezone.utc) + expires_in
+    else:
+        expires = datetime.now(timezone.utc) + timedelta(minutes=10)
+    to_encode.update({"exp":expires})
+    encode_jwt = jwt.encode(to_encode,TOKEN,config("ALGORITHM"))
+    return encode_jwt
+
+#Decode jwt token
+def decode_token(token):
+    try:
+        payload = jwt.decode(token,config("ACCESS_TOKEN_SECRET"),algorithms=config("ALGORITHM"))
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise CredentialsException()
+        return user_id
+    except ExpiredSignatureError:
+        raise CredentialsException()
+    except InvalidTokenError:
+        raise CredentialsException()
+    
+    
+
 
 
 
