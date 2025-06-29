@@ -2,7 +2,7 @@ from fastapi import APIRouter,status
 from .schemas import UserRegisterSchema,SuccussResponse
 from database.database import db_dependencie
 from .services import RegisterUserService,OtpVerificationService,RequestNewOtpService
-from .exceptions import UserRegisterException,OtpResolutionFailException
+from .exceptions import UserRegisterException,OtpResolutionFailException,InternalServerException
 
 
 #Define router
@@ -38,4 +38,9 @@ def ConfirmOtp(otp:str,user_id:str,db:db_dependencie):
 #Request new otp
 @router.get("/reqest-otp/{user_id}",description="Use for request new otp",status_code=status.HTTP_200_OK)
 def RequestNewOtp(user_id:str,db:db_dependencie):
-    print(RequestNewOtpService(user_id,db))
+    if RequestNewOtpService(user_id,db):
+        return SuccussResponse(
+            message="New otp sent!",
+            data={}
+        )
+    raise InternalServerException()
