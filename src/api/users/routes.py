@@ -4,6 +4,7 @@ from database.database import db_dependencie
 from .services import RegisterUserService,OtpVerificationService,RequestNewOtpService
 from .exceptions import UserRegisterException,OtpResolutionFailException
 
+
 #Define router
 router = APIRouter(tags=["User services"])
 

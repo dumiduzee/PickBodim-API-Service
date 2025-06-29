@@ -1,4 +1,4 @@
-from .utils import GenVerifyCode,SendVerificationCode,HashPassword
+from .utils import GenVerifyCode,SendVerificationCode,HashPassword,AccountConfirmOtpSend
 from .repository import IsExists,InsertRegisterRecord,FindUserByUserIdRespo,VerifyUserUpdate,UpdateOtp
 from datetime import timedelta,datetime
 from .exceptions import UserNotFoundException,UserAlreadyVerifiedException,InvalidOtpCode,OtpCodeExpiredException,OtpCodeStillValidException
@@ -20,10 +20,9 @@ def RegisterUserService(db,user):
         #Insert user into database and get verfication code
         insertedUser = InsertRegisterRecord(db,user=user)
         #Send verification code to user
-        if SendVerificationCode(verification_code=insertedUser.verficationCode,CLIENT_NUMBER=insertedUser.phoneNumber,CLIENT_NAME=insertedUser.firstName):
+        if AccountConfirmOtpSend(user["Email"],"Account Verification",insertedUser.verficationCode,insertedUser.firstName):
             return insertedUser
-        else:
-            return False
+        return None
         
 
 def OtpVerificationService(OTP,USER_ID,DB):
@@ -59,7 +58,7 @@ def RequestNewOtpService(user_id,db):
     new_otp = GenVerifyCode()
     expire_time = datetime.now() + timedelta(minutes=int(OTP_EXPIRES_IN))
     otp =  UpdateOtp(exists_user,new_otp,expire_time,db)
-    if SendVerificationCode(otp,exists_user.phoneNumber,exists_user.firstName):
+    if AccountConfirmOtpSend(exists_user.Email,"Account Verification",exists_user.verficationCode,exists_user.firstName):
         return True
     else:
         return False

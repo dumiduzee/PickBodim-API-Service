@@ -2,7 +2,9 @@ import uuid
 from decouple import config
 import requests
 from passlib.hash import pbkdf2_sha256
+import json
 from .exceptions import UserRegisterException
+
 
 def GenVerifyCode():
     """Genarate verification code for the user"""
@@ -41,4 +43,27 @@ def SendVerificationCode(verification_code,CLIENT_NUMBER,CLIENT_NAME):
         print(e)
         raise UserRegisterException()
     
+#Send emails
 
+def AccountConfirmOtpSend(to_email: str, subject: str, otp_code: str,CLIENT_NAME):
+    url = "https://api.brevo.com/v3/smtp/email"
+    payload = json.dumps(
+        {
+            "sender": {"name": "PickBodim", "email": "dumilakshan4878@gmail.com"},
+            "to": [{"email": f"{to_email}"}],
+            "subject": subject,
+            "textContent": f"Hello {CLIENT_NAME}, Your PickBodim verification code is {otp_code}. Please enter it within the next 5 minutes to continue.",
+            
+        }
+    )
+    headers = {
+        "accept": "application/json",
+        "api-key": config("BRAVO_API_KEY"),
+        "content-type": "application/json",
+    }
+    response = requests.request("POST", url, headers=headers, data=payload)
+    res = response.json()
+    if res["messageId"]:
+        return True
+    else:
+        return False
