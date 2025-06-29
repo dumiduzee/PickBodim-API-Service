@@ -49,7 +49,7 @@ def AccountConfirmOtpSend(to_email: str, subject: str, otp_code: str,CLIENT_NAME
     url = "https://api.brevo.com/v3/smtp/email"
     payload = json.dumps(
         {
-            "sender": {"name": "PickBodim", "email": "dumilakshan4878@gmail.com"},
+            "sender": {"name": "PickBodim", "email": config("SENDER_EMAIL_BRAVO")},
             "to": [{"email": f"{to_email}"}],
             "subject": subject,
             "textContent": f"Hello {CLIENT_NAME}, Your PickBodim verification code is {otp_code}. Please enter it within the next 5 minutes to continue.",
